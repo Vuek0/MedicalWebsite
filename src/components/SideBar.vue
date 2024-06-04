@@ -1,36 +1,34 @@
 <script setup>
 import { ref } from 'vue'
-
+import Page from './Page.vue';
 const props = defineProps({
-  currentPage: {
+  pages: {
     type: Object,
     default: () => {}
   },
 })
-console.log(props.currentPage);
 
 </script>
 
 <template>
   <aside>
-    <div class="page">
-      
-    </div>
-    <h1 @click="props.currentPage.setPage('some')">so</h1>
-    <h2 @click="props.currentPage.setPage('som')">2sa</h2>
+    <Page v-for="page in props.pages.pages" :pages="props.pages" :pageName="page.name" :key="page.name" :icon="page.icon"/>
   </aside>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 
 aside{
   width: fit-content;
   height: 100vh;
   width: 50px;
+  background: rgb(220, 220, 220);
 }
 .page{
   width: 50px;
   height: 50px;
   background: #fff;
+  border-bottom: 3px solid #000;
+  cursor: pointer;
 }
 </style>
