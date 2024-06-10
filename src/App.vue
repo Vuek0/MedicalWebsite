@@ -2,11 +2,33 @@
 import { ref } from 'vue';
 import SideBar from './components/SideBar.vue';
 import { usePages } from './stores/Pages';
+import { useUsers } from './stores/Users';
 const pages = usePages();
+const users = useUsers();
 const isRegistered = ref(false);
 const isLoginForm = ref(true);
 const login = defineModel('login');
 const password = defineModel('password');
+const formError = ref();
+const API_KEY = import.meta.env.VITE_API_KEY;
+console.log(API_KEY);
+function registrationHandler(e){
+  e.preventDefault();
+
+  isRegistered.value = true;
+}
+
+function loginHandler(e){
+  e.preventDefault();
+  const user = users.checkForUser(login.value, password.value);
+  
+  console.log(user);
+  // if(user){
+  //   isRegistered.value = true;
+  //   isLoginForm.value = false;
+  // }
+
+}
 </script>
 
 <template>
@@ -16,7 +38,7 @@ const password = defineModel('password');
       <h1>Городская Больница</h1>
       <section class="registration" v-if="!isRegistered && !isLoginForm">
         <h2>Регистрация</h2>
-        <form @submit="$event.preventDefault(); isRegistered=true;">
+        <form @submit="registrationHandler">
           <input type="text" placeholder="Логин" v-model="login">
           <input type="password" placeholder="Пароль" v-model="password">
           <button type="submit">Зарегестрироваться</button>
@@ -29,8 +51,9 @@ const password = defineModel('password');
         
       </section>
       <section class="login" v-else-if="isLoginForm">
-        <form @submit="$event.preventDefault(); isRegistered=true; isLoginForm=false">
+        <form @submit="loginHandler">
           <h2>Вход</h2>
+          <p v-if="formError">{{ formError }}</p>
           <input type="text" placeholder="Логин" v-model="login">
           <input type="password" placeholder="Пароль" v-model="password">
           <button type="submit">Войти</button>
