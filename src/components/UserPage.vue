@@ -1,7 +1,14 @@
 <script setup>
+import { setCookie } from "../functions/Cookies";
 const props = defineProps({
     userObj : Object,
 })
+
+function deleteHandler(e){
+    e.preventDefault();
+    setCookie("_id", "");
+    location.reload();
+}
 </script>
 
 <template>
@@ -12,7 +19,7 @@ const props = defineProps({
             <p>Фамилия : {{ userObj.surname }}</p>
             <p>Логин : {{ userObj.login }}</p>
         </div>
-        <button>Выйти из аккаунта</button>
+        <button @click="deleteHandler">Выйти из аккаунта</button>
     </section>
 </template>
 
