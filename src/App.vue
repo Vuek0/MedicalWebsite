@@ -1,8 +1,11 @@
 <script setup>
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import SideBar from './components/SideBar.vue';
 import { usePages } from './stores/Pages';
-import axios from "axios"
+import axios from "axios";
+import md5 from "crypto-js/md5";
+import { getCookie, setCookie} from './functions/Cookies';
+import UserPage from './components/UserPage.vue';
 const pages = usePages();
 const isRegistered = ref(false);
 const isLoginForm = ref(true);
@@ -10,23 +13,56 @@ const login = defineModel('login');
 const password = defineModel('password');
 const formError = ref();
 const API_KEY = import.meta.env.VITE_API_KEY;
-console.log(API_KEY);
+const userObject = ref();
+// console.log(API_KEY);
+onMounted(async ()=>{
+  if(getCookie("_id")){
+    const response = await axios.get(`https://medical-server-six.vercel.app/users?key=${API_KEY}`);
+    const users = response.data;
+    users.forEach(item => {
+      if(item._id === getCookie("_id")){
+        userObject.value = item;
+      }
+    })
+    isRegistered.value = true;
+    isLoginForm.value = false;
+  }
+});
+
 function registrationHandler(e){
   e.preventDefault();
-
   isRegistered.value = true;
 }
 
 async function loginHandler(e){
   e.preventDefault();
-  const response = await axios.get(`https://medical-server-six.vercel.app/users?key=${API_KEY}`)
-  console.log(response);
-  // if(user){
-  //   isRegistered.value = true;
-  //   isLoginForm.value = false;
-  // }
-
+  const response = await axios.get(`https://medical-server-six.vercel.app/users?key=${API_KEY}`);
+  const users = response.data;
+  let user;
+  users.some(item => {
+    if(item.login === login.value){
+      if(md5(password.value).toString() == item.password){
+        console.log(item);
+        isLoginForm.value = false;
+        isRegistered.value = true;
+        if(!getCookie("_id")) setCookie("_id", item._id, 3);
+        
+        return true;
+        
+      } else{
+        console.log("incorrect");
+        formError.value = "Логин или пароль неверны"
+        return false;
+      }
+    } else{
+      console.log("Not found")
+      formError.value = "Аккаунт не найден";
+      return false;
+    }
+  })
 }
+
+
 </script>
 
 <template>
@@ -51,11 +87,13 @@ async function loginHandler(e){
       <section class="login" v-else-if="isLoginForm">
         <form @submit="loginHandler">
           <h2>Вход</h2>
-          <p v-if="formError">{{ formError }}</p>
+          <div class="formError" v-if="formError">
+            <p>{{ formError }}</p>
+          </div>
           <input type="text" placeholder="Логин" v-model="login">
           <input type="password" placeholder="Пароль" v-model="password">
           <button type="submit">Войти</button>
-          <p>Еще нет аккаунта? <a href="#" class="form__link" @click="isLoginForm = false">Зарегестрироваться</a></p>
+          <p>Вы пациент? <a href="#" class="form__link" @click="isLoginForm = false">Зарегестрироваться</a></p>
           login:
           {{ login }}
           password:
@@ -67,10 +105,7 @@ async function loginHandler(e){
         It's the main page<br />
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Nihil cupiditate dignissimos reiciendis sint facere voluptatibus asperiores exercitationem, veniam molestiae saepe?
       </section>
-      <section v-else-if="pages.currentPage == 'user'">
-        It's the user page<br />
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Nihil cupiditate dignissimos reiciendis sint facere voluptatibus asperiores exercitationem, veniam molestiae saepe?
-      </section>
+      <UserPage :userObj="userObject" v-else-if="pages.currentPage == 'user'" />
     </div>
     
   </main>
@@ -91,6 +126,13 @@ async function loginHandler(e){
     flex-direction: column;
     align-items: center;
     justify-content: center;
+  }
+
+  .formError{
+    background: red;
+    color:aliceblue;
+    padding: 5px 15px;
+    width: 100%;
   }
 
   .registration, .login{
