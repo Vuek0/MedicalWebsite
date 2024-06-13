@@ -2,9 +2,8 @@
 import { ref } from 'vue';
 import SideBar from './components/SideBar.vue';
 import { usePages } from './stores/Pages';
-import { useUsers } from './stores/Users';
+import axios from "axios"
 const pages = usePages();
-const users = useUsers();
 const isRegistered = ref(false);
 const isLoginForm = ref(true);
 const login = defineModel('login');
@@ -18,11 +17,10 @@ function registrationHandler(e){
   isRegistered.value = true;
 }
 
-function loginHandler(e){
+async function loginHandler(e){
   e.preventDefault();
-  const user = users.checkForUser(login.value, password.value);
-  
-  console.log(user);
+  const response = await axios.get(`https://medical-server-six.vercel.app/users?key=${API_KEY}`)
+  console.log(response);
   // if(user){
   //   isRegistered.value = true;
   //   isLoginForm.value = false;
