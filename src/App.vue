@@ -4,11 +4,13 @@ import FormInput from './components/FormInput.vue';
 import SubmitButton from './components/SubmitButton.vue';
 import SideBar from './components/SideBar.vue';
 import { usePages } from './stores/Pages';
+import { useUser } from './stores/User';
 import axios from "axios";
 import md5 from "crypto-js/md5";
 import { getCookie, setCookie } from './functions/Cookies';
 import UserPage from './components/UserPage.vue';
 const pages = usePages();
+const user = useUser();
 const isRegistered = ref(false);
 const isLoginForm = ref(true);
 const name = defineModel('name');
@@ -17,7 +19,7 @@ const login = defineModel('login');
 const password = defineModel('password');
 const formError = ref();
 const API_KEY = import.meta.env.VITE_API_KEY;
-const userObject = ref();
+
 // console.log(API_KEY);
 onMounted(async ()=>{
   if(getCookie("_id")){
@@ -25,13 +27,41 @@ onMounted(async ()=>{
     const users = response.data;
     users.forEach(item => {
       if(item._id === getCookie("_id")){
-        userObject.value = item;
+        user.obj = item;
       }
     })
     isRegistered.value = true;
     isLoginForm.value = false;
   }
 });
+
+async function loginHandler(e){
+  e.preventDefault();
+  formError.value = "";
+  const response = await axios.get(`https://medical-server-six.vercel.app/users?key=${API_KEY}`);
+  if(response.status!=200){
+    formError.value="Произошла какая-то ошибка";
+    return;
+  }
+  const users = response.data;
+  users.forEach(item => {
+    if(item.login === login.value){
+      if(md5(password.value).toString() == item.password){
+        console.log(item);
+        isLoginForm.value = false;
+        isRegistered.value = true;
+        if(!getCookie("_id")) setCookie("_id", item._id, 3);
+        user.obj = item;
+      } else{
+        console.log("incorrect");
+        formError.value = "Логин или пароль неверны"
+      }
+    } else{
+      console.log("Not found")
+      if(formError.value!=="Логин или пароль неверны") formError.value = "Аккаунт не найден";
+    }
+  })
+}
 
 async function registrationHandler(e){
   e.preventDefault();
@@ -49,41 +79,13 @@ async function registrationHandler(e){
       'Content-Type' : 'application/json'
     }
   })
-
-  console.log(`https://medical-server-six.vercel.app/users?key=${API_KEY}`);
-  console.log(process.env.VITE_API_KEY);
-
-  const res = await req.data;
+  
+  const res = await req;
   console.log(await res);
   if(res.status == 200){
     isRegistered.value = true;
   }
 
-}
-
-async function loginHandler(e){
-  e.preventDefault();
-  formError.value = "";
-  const response = await axios.get(`https://medical-server-six.vercel.app/users?key=${API_KEY}`);
-  const users = response.data;
-  let user;
-  users.forEach(item => {
-    if(item.login === login.value){
-      if(md5(password.value).toString() == item.password){
-        console.log(item);
-        isLoginForm.value = false;
-        isRegistered.value = true;
-        if(!getCookie("_id")) setCookie("_id", item._id, 3);
-        userObject.value = item;            
-      } else{
-        console.log("incorrect");
-        formError.value = "Логин или пароль неверны"
-      }
-    } else{
-      console.log("Not found")
-      if(formError.value!=="Логин или пароль неверны") formError.value = "Аккаунт не найден";
-    }
-  })
 }
 
 
@@ -93,7 +95,7 @@ async function loginHandler(e){
   <SideBar :pages="pages"/>
   <main>
     <div class="container">
-      <h1>Городская Больница</h1>
+      <h1>MedCareUz</h1>
       <section class="registration" v-if="!isRegistered && !isLoginForm">
         <h2>Регистрация</h2>
         <form @submit="registrationHandler">
@@ -135,7 +137,7 @@ async function loginHandler(e){
         It's the main page<br />
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Nihil cupiditate dignissimos reiciendis sint facere voluptatibus asperiores exercitationem, veniam molestiae saepe?
       </section>
-      <UserPage :userObj="userObject" v-else-if="pages.currentPage == 'user'" />
+      <UserPage :userObj="user.obj" v-else-if="pages.currentPage == 'user'" />
     </div>
     
   </main>
