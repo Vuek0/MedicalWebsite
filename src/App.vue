@@ -1,14 +1,18 @@
 <script setup>
 import { onMounted, ref } from 'vue';
+import FormInput from './components/FormInput.vue';
+import SubmitButton from './components/SubmitButton.vue';
 import SideBar from './components/SideBar.vue';
 import { usePages } from './stores/Pages';
 import axios from "axios";
 import md5 from "crypto-js/md5";
-import { getCookie, setCookie} from './functions/Cookies';
+import { getCookie, setCookie } from './functions/Cookies';
 import UserPage from './components/UserPage.vue';
 const pages = usePages();
 const isRegistered = ref(false);
 const isLoginForm = ref(true);
+const name = defineModel('name');
+const surname = defineModel('surname');
 const login = defineModel('login');
 const password = defineModel('password');
 const formError = ref();
@@ -29,35 +33,50 @@ onMounted(async ()=>{
   }
 });
 
-function registrationHandler(e){
+async function registrationHandler(e){
   e.preventDefault();
+  const data = {
+    name: name.value,
+    surname: surname.value,
+    login: login.value,
+    password: password.value,
+    type: "pacient",
+  }
+  console.log(data);
+  const req = await axios.post(`https://medical-server-six.vercel.app/users?key=${API_KEY}`, data, 
+  {
+    headers: {
+      'Content-Type' : 'application/json'
+    }
+  })
+
+  const res = await req.data;
+  console.log(await res);
   isRegistered.value = true;
+
 }
 
 async function loginHandler(e){
   e.preventDefault();
+  formError.value = "";
   const response = await axios.get(`https://medical-server-six.vercel.app/users?key=${API_KEY}`);
   const users = response.data;
   let user;
-  users.some(item => {
+  users.forEach(item => {
     if(item.login === login.value){
       if(md5(password.value).toString() == item.password){
         console.log(item);
         isLoginForm.value = false;
         isRegistered.value = true;
         if(!getCookie("_id")) setCookie("_id", item._id, 3);
-        
-        return true;
-        
+        userObject.value = item;            
       } else{
         console.log("incorrect");
         formError.value = "Логин или пароль неверны"
-        return false;
       }
     } else{
       console.log("Not found")
-      formError.value = "Аккаунт не найден";
-      return false;
+      if(formError.value!=="Логин или пароль неверны") formError.value = "Аккаунт не найден";
     }
   })
 }
@@ -73,10 +92,16 @@ async function loginHandler(e){
       <section class="registration" v-if="!isRegistered && !isLoginForm">
         <h2>Регистрация</h2>
         <form @submit="registrationHandler">
-          <input type="text" placeholder="Логин" v-model="login">
-          <input type="password" placeholder="Пароль" v-model="password">
+          <FormInput type="text" placeholder="Name" v-model="name"/>
+          <FormInput type="text" placeholder="Surname" v-model="surname" />
+          <FormInput type="text" placeholder="Логин" v-model="login" />
+          <FormInput type="password" placeholder="Пароль" v-model="password" />
           <button type="submit">Зарегестрироваться</button>
           <p>Уже есть аккаунт? <a href="#" class="form__link" @click="isLoginForm = true">войти</a></p>
+          name:
+          {{ name }}
+          surname:
+          {{ surname }}
           login:
           {{ login }}
           password:
@@ -90,8 +115,8 @@ async function loginHandler(e){
           <div class="formError" v-if="formError">
             <p>{{ formError }}</p>
           </div>
-          <input type="text" placeholder="Логин" v-model="login">
-          <input type="password" placeholder="Пароль" v-model="password">
+          <FormInput type="text" placeholder="Логин" v-model="login" />
+          <FormInput type="password" placeholder="Пароль" v-model="password" />
           <button type="submit">Войти</button>
           <p>Вы пациент? <a href="#" class="form__link" @click="isLoginForm = false">Зарегестрироваться</a></p>
           login:
@@ -150,11 +175,6 @@ async function loginHandler(e){
       align-items: center;
       gap: 10px;
       width: 400px;
-
-      input{
-        padding: 5px 15px;
-        font-size: 30px;
-      }
       button{
         width: fit-content;
         padding: 10px 20px;
