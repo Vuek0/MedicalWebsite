@@ -51,6 +51,7 @@ async function registrationHandler(e){
   })
 
   console.log(`https://medical-server-six.vercel.app/users?key=${API_KEY}`);
+  console.log(process.env.VITE_API_KEY);
 
   const res = await req.data;
   console.log(await res);
