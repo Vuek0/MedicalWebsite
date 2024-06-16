@@ -50,9 +50,13 @@ async function registrationHandler(e){
     }
   })
 
+  console.log(`https://medical-server-six.vercel.app/users?key=${API_KEY}`);
+
   const res = await req.data;
   console.log(await res);
-  isRegistered.value = true;
+  if(res.status == 200){
+    isRegistered.value = true;
+  }
 
 }
 
