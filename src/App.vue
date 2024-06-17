@@ -20,8 +20,18 @@ const password = defineModel('password');
 const formError = ref();
 const API_KEY = import.meta.env.VITE_API_KEY;
 
-// console.log(API_KEY);
 onMounted(async ()=>{
+  const urlParams = new URLSearchParams(window.location.search);
+  name.value = urlParams.get('name');
+  surname.value = urlParams.get('surname');
+  login.value = urlParams.get('login');
+  password.value = urlParams.get('password');
+  if(name.value && surname.value && login.value && password.value){
+    isLoginForm.value = false;
+    registrationHandler();
+  } else if(login.value && password.value){
+    loginHandler();
+  }
   if(getCookie("_id")){
     const response = await axios.get(`https://medical-server-six.vercel.app/users?key=${API_KEY}`);
     const users = response.data;
@@ -35,8 +45,11 @@ onMounted(async ()=>{
   }
 });
 
+
 async function loginHandler(e){
-  e.preventDefault();
+  if(e){
+    e.preventDefault();
+  }
   formError.value = "";
   const response = await axios.get(`https://medical-server-six.vercel.app/users?key=${API_KEY}`);
   if(response.status!=200){
@@ -53,18 +66,18 @@ async function loginHandler(e){
         if(!getCookie("_id")) setCookie("_id", item._id, 3);
         user.obj = item;
       } else{
-        console.log("incorrect");
         formError.value = "Логин или пароль неверны"
       }
     } else{
-      console.log("Not found")
       if(formError.value!=="Логин или пароль неверны") formError.value = "Аккаунт не найден";
     }
   })
 }
 
 async function registrationHandler(e){
-  e.preventDefault();
+  if(e){
+    e.preventDefault();
+  }
   const data = {
     name: name.value,
     surname: surname.value,
@@ -72,7 +85,6 @@ async function registrationHandler(e){
     password: password.value,
     type: "pacient",
   }
-  console.log(data);
   const req = await axios.post(`https://medical-server-six.vercel.app/users?key=${API_KEY}`, data, 
   {
     headers: {
@@ -99,10 +111,10 @@ async function registrationHandler(e){
       <section class="registration" v-if="!isRegistered && !isLoginForm">
         <h2>Регистрация</h2>
         <form @submit="registrationHandler">
-          <FormInput type="text" placeholder="Name" v-model="name"/>
-          <FormInput type="text" placeholder="Surname" v-model="surname" />
-          <FormInput type="text" placeholder="Логин" v-model="login" />
-          <FormInput type="password" placeholder="Пароль" v-model="password" />
+          <FormInput type="text" placeholder="Name" v-model="name" :value="name" />
+          <FormInput type="text" placeholder="Surname" v-model="surname" :value="surname" />
+          <FormInput type="text" placeholder="Логин" v-model="login" :value="login" />
+          <FormInput type="password" placeholder="Пароль" v-model="password" :value="password" />
           <button type="submit">Зарегестрироваться</button>
           <p>Уже есть аккаунт? <a href="#" class="form__link" @click="isLoginForm = true">войти</a></p>
           name:
@@ -122,8 +134,8 @@ async function registrationHandler(e){
           <div class="formError" v-if="formError">
             <p>{{ formError }}</p>
           </div>
-          <FormInput type="text" placeholder="Логин" v-model="login" />
-          <FormInput type="password" placeholder="Пароль" v-model="password" />
+          <FormInput type="text" placeholder="Логин" v-model="login" :value="login" />
+          <FormInput type="password" placeholder="Пароль" v-model="password" :value="password" />
           <button type="submit">Войти</button>
           <p>Вы пациент? <a href="#" class="form__link" @click="isLoginForm = false">Зарегестрироваться</a></p>
           login:
