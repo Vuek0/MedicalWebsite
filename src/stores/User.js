@@ -4,6 +4,9 @@ export const useUser = defineStore('currentStore', {
     state: () => ({
         obj: {
             
+        },
+        currentDoctor: {
+            
         }
     }),
     actions: {

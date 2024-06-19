@@ -1,14 +1,17 @@
 <script setup>
 import { onMounted, ref } from 'vue';
 import FormInput from './components/FormInput.vue';
-import SubmitButton from './components/SubmitButton.vue';
+import SubmitButton from './components/StyledButton.vue';
 import SideBar from './components/SideBar.vue';
+
 import { usePages } from './stores/Pages';
 import { useUser } from './stores/User';
 import axios from "axios";
 import md5 from "crypto-js/md5";
+import VisitsPage from './components/VisitsPage.vue';
 import { getCookie, setCookie } from './functions/Cookies';
 import UserPage from './components/UserPage.vue';
+import MainPage from './components/MainPage.vue';
 const pages = usePages();
 const user = useUser();
 const isRegistered = ref(false);
@@ -47,9 +50,7 @@ onMounted(async ()=>{
 
 
 async function loginHandler(e){
-  if(e){
-    e.preventDefault();
-  }
+  e.preventDefault();
   formError.value = "";
   const response = await axios.get(`https://medical-server-six.vercel.app/users?key=${API_KEY}`);
   if(response.status!=200){
@@ -75,28 +76,35 @@ async function loginHandler(e){
 }
 
 async function registrationHandler(e){
-  if(e){
-    e.preventDefault();
-  }
-  const data = {
-    name: name.value,
-    surname: surname.value,
-    login: login.value,
-    password: password.value,
-    type: "pacient",
-  }
-  const req = await axios.post(`https://medical-server-six.vercel.app/users?key=${API_KEY}`, data, 
-  {
-    headers: {
-      'Content-Type' : 'application/json'
+  e.preventDefault();  
+  if(name.value && surname.value && login.value && password.value){
+    const data = {
+      name: name.value,
+      surname: surname.value,
+      login: login.value,
+      password: password.value,
+      type: "pacient",
     }
-  })
-  
-  const res = await req;
-  console.log(await res);
-  if(res.status == 200){
-    isRegistered.value = true;
+    const req = await axios.post(`https://medical-server-six.vercel.app/users?key=${API_KEY}`, data, 
+    {
+      headers: {
+        'Content-Type' : 'application/json'
+      }
+    })
+    const res = await req;
+    const object = await res.data;
+    if(res.status == 200){
+
+      if(!getCookie("_id")) setCookie("_id", object._id, 3);
+      user.obj = object;
+      isRegistered.value = true;
+      
+    }
+  } else{
+    formError.value="Поля не могут быть пустыми";
+    console.log(formError)
   }
+  
 
 }
 
@@ -107,24 +115,19 @@ async function registrationHandler(e){
   <SideBar :pages="pages"/>
   <main>
     <div class="container">
-      <h1>MedCareUz</h1>
-      <section class="registration" v-if="!isRegistered && !isLoginForm">
-        <h2>Регистрация</h2>
+      <a href="#" @click="pages.currentPage = 'main'"><img src="./assets/logo.png" alt="logo"></a>
+      <section class="registration" v-if="!isRegistered && !isLoginForm">        
         <form @submit="registrationHandler">
+          <h2>Регистрация</h2>
+          <div class="formError" v-if="formError">
+            <p>{{ formError }}</p>
+          </div>  
           <FormInput type="text" placeholder="Name" v-model="name" :value="name" />
           <FormInput type="text" placeholder="Surname" v-model="surname" :value="surname" />
           <FormInput type="text" placeholder="Логин" v-model="login" :value="login" />
           <FormInput type="password" placeholder="Пароль" v-model="password" :value="password" />
-          <button type="submit">Зарегестрироваться</button>
+          <SubmitButton :text="'Зарегестрироваться'" />
           <p>Уже есть аккаунт? <a href="#" class="form__link" @click="isLoginForm = true">войти</a></p>
-          name:
-          {{ name }}
-          surname:
-          {{ surname }}
-          login:
-          {{ login }}
-          password:
-          {{ password }}
         </form>
         
       </section>
@@ -136,26 +139,24 @@ async function registrationHandler(e){
           </div>
           <FormInput type="text" placeholder="Логин" v-model="login" :value="login" />
           <FormInput type="password" placeholder="Пароль" v-model="password" :value="password" />
-          <button type="submit">Войти</button>
-          <p>Вы пациент? <a href="#" class="form__link" @click="isLoginForm = false">Зарегестрироваться</a></p>
-          login:
-          {{ login }}
-          password:
-          {{ password }}
+          <SubmitButton :text="'Войти'" />
+          <p>Еще нет аккаунта? <a href="#" class="form__link" @click="isLoginForm = false">Зарегестрироваться</a></p>
         </form>
         
       </section>
-      <section v-else-if="pages.currentPage == 'main'">
-        It's the main page<br />
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Nihil cupiditate dignissimos reiciendis sint facere voluptatibus asperiores exercitationem, veniam molestiae saepe?
-      </section>
-      <UserPage :userObj="user.obj" v-else-if="pages.currentPage == 'user'" />
+      <MainPage v-else-if="pages.currentPage == 'main'" />
+      <UserPage v-else-if="pages.currentPage == 'user'" />
+      <VisitsPage v-else-if="pages.currentPage == 'visits'" />
     </div>
     
   </main>
 </template>
 
 <style lang="scss" scoped>
+  $primary-color: #0be9a2;
+  $bg-color: #f4f4f4;
+  $dark-color: #066648;
+
   h1{
     font-size: 100px;
   }
@@ -184,6 +185,7 @@ async function registrationHandler(e){
     display: flex;
     flex-direction: column;
     gap: 30px;
+    align-items: center;
 
     h2{
       font-size: 60px;
@@ -193,13 +195,9 @@ async function registrationHandler(e){
       flex-direction: column;
       align-items: center;
       gap: 10px;
-      width: 400px;
-      button{
-        width: fit-content;
-        padding: 10px 20px;
-        font-size: 25px;
-      }
-
+      max-width: 250px;
+      text-align: center;
+      
       a{
         color: cornflowerblue;
 

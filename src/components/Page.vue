@@ -12,9 +12,9 @@ const props = defineProps({
 
 <template>
     <div>
-        <div class="page" @click="props.pages.setPage(`${pageName}`)"> 
-      <img :src="icon" :alt="pageName" width="40px" height="40px">
-    </div>
+      <div class="page" @click="props.pages.setPage(`${pageName}`)"> 
+        <img :src="icon" :alt="pageName" width="30px" height="30px">
+      </div>
     </div>
 </template>
 
@@ -28,5 +28,16 @@ const props = defineProps({
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+img{
+  transition: 0.5s cubic-bezier(0.455, 0.03, 0.515, 0.955);
+}
+
+.page:hover{
+  img{
+    width: 40px;
+    height: 40px;
+  }
 }
 </style>
