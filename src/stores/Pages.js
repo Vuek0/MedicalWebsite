@@ -15,6 +15,10 @@ export const usePages = defineStore('currentStore', {
             {
                 name: "visits",
                 icon: '/icons/visits.svg'
+            },
+            {
+                name: "contacts",
+                icon: '/icons/contacts.svg'
             }
         ],
     }),

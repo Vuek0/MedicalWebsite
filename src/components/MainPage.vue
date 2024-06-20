@@ -106,14 +106,6 @@
     padding: 10px;
 }
 
-.notfound{
-    // padding: 70px;
-
-    h2{
-        // font-size: 40px;
-    }
-}
-
 .visit--form{
     display: flex;
     flex-direction: column;

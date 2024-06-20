@@ -12,6 +12,7 @@ import VisitsPage from './components/VisitsPage.vue';
 import { getCookie, setCookie } from './functions/Cookies';
 import UserPage from './components/UserPage.vue';
 import MainPage from './components/MainPage.vue';
+import ContactsPage from './components/ContactsPage.vue';
 const pages = usePages();
 const user = useUser();
 const isRegistered = ref(false);
@@ -50,7 +51,9 @@ onMounted(async ()=>{
 
 
 async function loginHandler(e){
-  e.preventDefault();
+  if(e){
+    e.preventDefault();
+  }
   formError.value = "";
   const response = await axios.get(`https://medical-server-six.vercel.app/users?key=${API_KEY}`);
   if(response.status!=200){
@@ -147,6 +150,7 @@ async function registrationHandler(e){
       <MainPage v-else-if="pages.currentPage == 'main'" />
       <UserPage v-else-if="pages.currentPage == 'user'" />
       <VisitsPage v-else-if="pages.currentPage == 'visits'" />
+      <ContactsPage v-else-if="pages.currentPage == 'contacts'" />
     </div>
     
   </main>
