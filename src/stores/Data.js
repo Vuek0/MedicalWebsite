@@ -5,5 +5,8 @@ export const useData = defineStore('dataStore', {
         doctors: null
     }),
     actions: {
+        changeDoctors(arr){
+            this.doctors = arr;
+        }
     }
 });

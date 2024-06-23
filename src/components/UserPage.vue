@@ -4,9 +4,11 @@ import { setCookie } from "../functions/Cookies";
 import ProfileText from "./ProfileText.vue";
 import StyledButton from "./StyledButton.vue";
 import { useUser } from '../stores/User';
+import { usePages } from '../stores/Pages';
 import Modal from "./Modal.vue";
 import axios from 'axios';
 const user = useUser();
+const pages = usePages();
 const userObj = user.obj
 const isModalOpen = defineModel('modalopen');
 const API_KEY = import.meta.env.VITE_API_KEY;
@@ -28,6 +30,7 @@ async function deleteHandler(){
     if(res.status === 200){
         console.log(res.data.data);
         setCookie("_id", "");
+
         location.reload();
     }
 

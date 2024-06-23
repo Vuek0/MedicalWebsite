@@ -2,6 +2,7 @@
     import { ref } from 'vue';
     import { useUser } from '../stores/User';
     import { useData } from '../stores/Data';
+    import Loading from './Loading.vue';
     import FormInput from './FormInput.vue';
     import StyledButton from './StyledButton.vue';
     import FormSelect from './FormSelect.vue';
@@ -10,18 +11,33 @@
     import axios from 'axios';
     import { onMounted } from 'vue';
     const user = useUser();
-    const data = useData();
+    const dataStore = useData();
     const userObj = user.obj;
     const type = JSON.parse(userObj.type);
     const terapevts = ref();
+    const currentDoctor = defineModel("currentDoctor");
+    const startTime = ref();
+    const endTime = ref();
     const API_KEY = import.meta.env.VITE_API_KEY;
-    onMounted(async() => {
-        if(!data.doctors){
-            const req = await axios.get(`https://medical-server-six.vercel.app/users/doctors/Терапевт?key=${API_KEY}`);
-            terapevts.value = await req.data;
-            data.doctors = await req.data;
-        } else{
-            terapevts.value = data.doctors;
+    const isLoading = ref(false);
+    onMounted(async() => {  
+        if(type.accountType === 'pacient'){
+            if(!dataStore.doctors){
+                isLoading.value = true;
+                axios.get(`https://medical-server-six.vercel.app/users/doctors/Терапевт?key=${API_KEY}`)
+                .then((data) =>{
+                    currentDoctor.value = data.data[0];
+                    startTime.value = JSON.parse(currentDoctor.value.type).workTime.start;
+                    endTime.value = JSON.parse(currentDoctor.value.type).workTime.end;
+                    terapevts.value = data.data;
+                    dataStore.changeDoctors(data.data);
+                    isLoading.value = false;
+                }).catch((err) => {
+                    console.log(err);
+                })
+            } else{
+                terapevts.value = dataStore.doctors;
+            }
         }
     })
     const currentDate = new Date();
@@ -32,22 +48,30 @@
     const minAllowedTime = `${currentDate.getFullYear()}-${month}-${currentDate.getDate()}`;
     const maxAllowedTime = `${currentDate.getFullYear()}-${month}-${currentDate.getDate() + 7}`;
     const date = defineModel('date');
-    const currentDoctor = ref();
 
+    function changeTimes(){
+        startTime.value = JSON.parse(JSON.parse(currentDoctor.value).type).workTime.start;
+        endTime.value = JSON.parse(JSON.parse(currentDoctor.value).type).workTime.end;
+    }
+
+    function addVisit(){
+        console.log("yes");
+    }
 </script>
 
 <template>
     <section v-if="type.accountType === 'pacient'" class="pacient">
-        <div class="visits">
+        <Loading v-if="isLoading"/>
+        <div class="visits" v-if="!isLoading">
             <h2>Приёмы</h2>
             <div class="body">
                     <div class="notfound">
                         <h3>Ничего не найдено</h3>
                         <h4>Хотите записаться к терапевту?</h4>
-                        <form class="visit--form">
-                            <FormSelect :doctors="terapevts" />
-                            <FormInput @change="console.log(date)" v-model="date" :placeholder="'Дата'" :type="'date'" :min="minAllowedTime" :max="maxAllowedTime"/>
-                            <FormInput min="11:00" max="19:00" :type="'time'" />
+                        <form class="visit--form" @submit="addVisit">
+                            <FormSelect @input="changeTimes" :doctors="terapevts" v-model="currentDoctor"/>
+                            <FormInput @change="console.log(date)" v-model="date" :placeholder="'Дата'" :type="'date'" :min="minAllowedTime" :max="maxAllowedTime" required/>
+                            <FormInput :min="startTime" :max="endTime" :type="'time'" required/>
                             <StyledButton :text="'Записаться'" />
                         </form>
                     </div>
@@ -62,7 +86,7 @@
             </div>
         </div>
         
-        <div class="referrals">
+        <div class="referrals" v-if="!isLoading">
             <h2>Направления</h2>
             <div class="body">
                 <RefferalCard />
@@ -71,7 +95,7 @@
             </div>
         </div>
 
-        <div class="doctors">
+        <div class="doctors" v-if="!isLoading">
             <h2>Врачи активные на данный момент:</h2>
         </div>
     </section>
