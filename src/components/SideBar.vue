@@ -35,7 +35,7 @@ function sideBarHandler(){
   </div>
   <aside :class="{ active : isOpen }">
     <div class="space"></div>
-    <Page v-for="page in props.pages.pages" :pages="props.pages" :pageName="page.name" :key="page.name" :icon="page.icon"/>
+    <Page class="page" v-for="page in props.pages.pages" :pages="props.pages" :pageName="page.name" :key="page.name" :icon="page.icon"/>
   </aside>
 </template>
 
@@ -44,15 +44,8 @@ function sideBarHandler(){
 aside{
   width: 50px;
   height: 100vh;
-  background: #fff;
+  background: var(--dark-color);
   transition: 0.5s;
-}
-.page{
-  width: 50px;
-  height: 50px;
-  background: #fff;
-  border-bottom: 3px solid #fff;
-  cursor: pointer;
 }
 
   .wrapper{
@@ -109,7 +102,9 @@ aside{
 
   .space{
     height: 50px;
-    border-bottom: 3px solid #000;
+    border-bottom: 3px solid var(--primary-color);
+    border-right: 3px solid var(--primary-color);
+
     // background: var(--dark-color);
   }
 

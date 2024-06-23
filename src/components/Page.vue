@@ -22,8 +22,9 @@ const props = defineProps({
 .page{
   width: 50px;
   height: 50px;
-  background: #fff;
-  border-bottom: 3px solid #000;
+  background: var(--dark-color);
+  border-bottom: 2px solid var(--primary-color);
+  border-right: 1px solid var(--primary-color);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -31,7 +32,7 @@ const props = defineProps({
 }
 
 img{
-  transition: 0.5s cubic-bezier(0.455, 0.03, 0.515, 0.955);
+  transition: .2s;
 }
 
 .page:hover{

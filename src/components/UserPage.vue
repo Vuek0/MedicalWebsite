@@ -21,14 +21,14 @@ async function deleteHandler(){
     const req = await axios.delete(
         `https://medical-server-six.vercel.app/users?key=${API_KEY}`, 
         {
-            "_id" : userObj._id
+            _id : userObj._id
         }
     );
     const res = await req;
     if(res.status === 200){
         console.log(res.data.data);
-        // setCookie("_id", "");
-        // location.reload();
+        setCookie("_id", "");
+        location.reload();
     }
 
     // const users = response.data;

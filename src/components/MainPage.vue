@@ -1,7 +1,7 @@
 <script setup>
     import { ref } from 'vue';
     import { useUser } from '../stores/User';
-    import { useData } from '../stores/Data'
+    import { useData } from '../stores/Data';
     import FormInput from './FormInput.vue';
     import StyledButton from './StyledButton.vue';
     import FormSelect from './FormSelect.vue';
@@ -41,24 +41,24 @@
         <div class="visits">
             <h2>Приёмы</h2>
             <div class="body">
-                <div class="notfound">
-                    <h3>Ничего не найдено</h3>
-                    <h4>Хотите записаться к терапевту?</h4>
-                    <form class="visit--form">
-                        <FormSelect :doctors="terapevts" />
-                        <FormInput @change="console.log(date)" v-model="date" :placeholder="'Дата'" :type="'date'" :min="minAllowedTime" :max="maxAllowedTime"/>
-                        <FormInput min="11:00" max="19:00" :type="'time'" />
-                        <StyledButton :text="'Записаться'" />
-                    </form>
-                </div>
-                <!-- <VisitCard />
+                    <!-- <div class="notfound">
+                        <h3>Ничего не найдено</h3>
+                        <h4>Хотите записаться к терапевту?</h4>
+                        <form class="visit--form">
+                            <FormSelect :doctors="terapevts" />
+                            <FormInput @change="console.log(date)" v-model="date" :placeholder="'Дата'" :type="'date'" :min="minAllowedTime" :max="maxAllowedTime"/>
+                            <FormInput min="11:00" max="19:00" :type="'time'" />
+                            <StyledButton :text="'Записаться'" />
+                        </form>
+                    </div> -->
                 <VisitCard />
                 <VisitCard />
                 <VisitCard />
                 <VisitCard />
                 <VisitCard />
                 <VisitCard />
-                <VisitCard /> -->
+                <VisitCard />
+                <VisitCard />
             </div>
         </div>
         
@@ -89,7 +89,7 @@
 
 .pacient{
     display: flex;
-    // flex-wrap: wrap;
+    flex-wrap: wrap;
     gap: 30px;
 }
 
@@ -110,5 +110,19 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
+}
+
+@media(max-width: 768px){
+    .visits{
+        width: 100%;
+    }
+
+    .referrals{
+        width: 100%;
+    }
+
+    .doctors{
+        width: 100%;
+    }
 }
 </style>

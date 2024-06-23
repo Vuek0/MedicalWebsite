@@ -3,11 +3,10 @@ import { onMounted, ref } from 'vue';
 import FormInput from './components/FormInput.vue';
 import SubmitButton from './components/StyledButton.vue';
 import SideBar from './components/SideBar.vue';
-
+import Loading from './components/Loading.vue';
 import { usePages } from './stores/Pages';
 import { useUser } from './stores/User';
 import axios from "axios";
-import md5 from "crypto-js/md5";
 import VisitsPage from './components/VisitsPage.vue';
 import { getCookie, setCookie } from './functions/Cookies';
 import UserPage from './components/UserPage.vue';
@@ -15,6 +14,7 @@ import MainPage from './components/MainPage.vue';
 import ContactsPage from './components/ContactsPage.vue';
 const pages = usePages();
 const user = useUser();
+const isLoading = ref(false);
 const isRegistered = ref(false);
 const isLoginForm = ref(true);
 const name = defineModel('name');
@@ -25,6 +25,7 @@ const formError = ref();
 const API_KEY = import.meta.env.VITE_API_KEY;
 
 onMounted(async ()=>{
+  isLoading.value = true;
   const urlParams = new URLSearchParams(window.location.search);
   name.value = urlParams.get('name');
   surname.value = urlParams.get('surname');
@@ -37,15 +38,15 @@ onMounted(async ()=>{
     loginHandler();
   }
   if(getCookie("_id")){
-    const response = await axios.get(`https://medical-server-six.vercel.app/users?key=${API_KEY}`);
-    const users = response.data;
-    users.forEach(item => {
-      if(item._id === getCookie("_id")){
-        user.obj = item;
-      }
-    })
+    const id = getCookie("_id");
+    const response = await axios.get(`https://medical-server-six.vercel.app/users?key=${API_KEY}&_id=${id}`);
+    const userObj = response.data;
+    user.obj = userObj;
     isRegistered.value = true;
     isLoginForm.value = false;
+    isLoading.value = false;
+  } else{
+    isLoading.value = false;
   }
 });
 
@@ -54,39 +55,43 @@ async function loginHandler(e){
   if(e){
     e.preventDefault();
   }
+  isLoading.value=true;
   formError.value = "";
-  const response = await axios.get(`https://medical-server-six.vercel.app/users?key=${API_KEY}`);
-  if(response.status!=200){
-    formError.value="Произошла какая-то ошибка";
-    return;
-  }
-  const users = response.data;
-  users.forEach(item => {
-    if(item.login === login.value){
-      if(md5(password.value).toString() == item.password){
-        console.log(item);
+  if(login.value && password.value){
+    const response = await axios.get(`https://medical-server-six.vercel.app/users?login=${login.value}&password=${password.value}&key=${API_KEY}`).then((res)=>{
+      const userData = res.data;
+      if(userData.status && userData.status !== 200){
+        formError.value = userData.message;
+        console.log(user);
+      } else{
+        user.obj = userData;
+        console.log(userData._id);
         isLoginForm.value = false;
         isRegistered.value = true;
-        if(!getCookie("_id")) setCookie("_id", item._id, 3);
-        user.obj = item;
-      } else{
-        formError.value = "Логин или пароль неверны"
+        if(!getCookie("_id")) setCookie("_id", userData._id, 3);
       }
-    } else{
-      if(formError.value!=="Логин или пароль неверны") formError.value = "Аккаунт не найден";
-    }
-  })
+      isLoading.value=false
+    });
+    
+  } else{
+    formError.value="Поля не могут быть пустыми";
+    console.log(formError)
+  }
+  
 }
 
 async function registrationHandler(e){
   e.preventDefault();  
   if(name.value && surname.value && login.value && password.value){
+    isLoading.value=true;
     const data = {
       name: name.value,
       surname: surname.value,
       login: login.value,
       password: password.value,
-      type: "pacient",
+      type: {
+        "accountType" : "pacient"
+      },
     }
     const req = await axios.post(`https://medical-server-six.vercel.app/users?key=${API_KEY}`, data, 
     {
@@ -107,6 +112,7 @@ async function registrationHandler(e){
     formError.value="Поля не могут быть пустыми";
     console.log(formError)
   }
+  isLoading.value=false;
   
 
 }
@@ -119,7 +125,8 @@ async function registrationHandler(e){
   <main>
     <div class="container">
       <a href="#" @click="pages.currentPage = 'main'"><img src="./assets/logo.png" alt="logo"></a>
-      <section class="registration" v-if="!isRegistered && !isLoginForm">        
+      <Loading v-if="isLoading"/>
+      <section class="registration" v-if="!isRegistered && !isLoginForm && !isLoading">        
         <form @submit="registrationHandler">
           <h2>Регистрация</h2>
           <div class="formError" v-if="formError">
@@ -134,7 +141,7 @@ async function registrationHandler(e){
         </form>
         
       </section>
-      <section class="login" v-else-if="isLoginForm">
+      <section class="login" v-else-if="isLoginForm && !isLoading">
         <form @submit="loginHandler">
           <h2>Вход</h2>
           <div class="formError" v-if="formError">
@@ -147,10 +154,10 @@ async function registrationHandler(e){
         </form>
         
       </section>
-      <MainPage v-else-if="pages.currentPage == 'main'" />
-      <UserPage v-else-if="pages.currentPage == 'user'" />
-      <VisitsPage v-else-if="pages.currentPage == 'visits'" />
-      <ContactsPage v-else-if="pages.currentPage == 'contacts'" />
+      <MainPage v-else-if="!isLoading && pages.currentPage == 'main'" />
+      <UserPage v-else-if="!isLoading && pages.currentPage == 'user'" />
+      <VisitsPage v-else-if="!isLoading && pages.currentPage == 'visits'" />
+      <ContactsPage v-else-if="!isLoading && pages.currentPage == 'contacts'" />
     </div>
     
   </main>
@@ -161,6 +168,7 @@ async function registrationHandler(e){
   $bg-color: #f4f4f4;
   $dark-color: #066648;
 
+  
   h1{
     font-size: 100px;
   }
