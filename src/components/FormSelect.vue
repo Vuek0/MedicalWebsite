@@ -13,7 +13,7 @@
 
 <template>
     <select :name="name" :id="id" @input="emit('update:modelValue', $event.target.value)">
-        <SelectOption @click="console.log(doctor)" v-for="doctor in props.doctors" :key="doctor" :value="doctor._id" :innerValue="`${doctor.name} (${JSON.parse(doctor.type) .workTime.start} - ${JSON.parse(doctor.type) .workTime.end})`"/>
+        <SelectOption @click="console.log(doctor)" v-for="doctor in props.doctors" :key="doctor" :value="doctor._id" :innerValue="`${doctor.name} ${doctor.surname} (${JSON.parse(doctor.type) .workTime.start} - ${JSON.parse(doctor.type) .workTime.end})`"/>
     </select>
 </template>
 

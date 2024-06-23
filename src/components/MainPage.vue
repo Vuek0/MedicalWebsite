@@ -41,7 +41,7 @@
         <div class="visits">
             <h2>Приёмы</h2>
             <div class="body">
-                    <!-- <div class="notfound">
+                    <div class="notfound">
                         <h3>Ничего не найдено</h3>
                         <h4>Хотите записаться к терапевту?</h4>
                         <form class="visit--form">
@@ -50,7 +50,7 @@
                             <FormInput min="11:00" max="19:00" :type="'time'" />
                             <StyledButton :text="'Записаться'" />
                         </form>
-                    </div> -->
+                    </div>
                 <VisitCard />
                 <VisitCard />
                 <VisitCard />

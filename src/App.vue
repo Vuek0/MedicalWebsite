@@ -91,9 +91,7 @@ async function registrationHandler(e){
       surname: surname.value,
       login: login.value,
       password: password.value,
-      type: {
-        "accountType" : "pacient"
-      },
+      type: '{accountType : "pacient"}'
     }
     const req = await axios.post(`https://medical-server-six.vercel.app/users?key=${API_KEY}`, data, 
     {
