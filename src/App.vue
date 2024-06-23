@@ -81,7 +81,9 @@ async function loginHandler(e){
 }
 
 async function registrationHandler(e){
-  e.preventDefault();  
+  if(e){
+    e.preventDefault();  
+  }
   if(name.value && surname.value && login.value && password.value){
     isLoading.value=true;
     const data = {
