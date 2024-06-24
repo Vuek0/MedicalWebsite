@@ -2,16 +2,20 @@
     import { ref } from 'vue';
     import { useUser } from '../stores/User';
     import { useData } from '../stores/Data';
+    import { usePages } from '../stores/Pages';
     import Loading from './Loading.vue';
     import FormInput from './FormInput.vue';
     import StyledButton from './StyledButton.vue';
     import FormSelect from './FormSelect.vue';
     import VisitCard from './VisitCard.vue';
     import RefferalCard from './RefferalCard.vue';
+    import DoctorCard from './DoctorCard.vue';
     import axios from 'axios';
+
     import { onMounted } from 'vue';
     const user = useUser();
     const dataStore = useData();
+    const pages = usePages();
     const userObj = user.obj;
     const type = JSON.parse(userObj.type);
     const terapevts = ref();
@@ -63,15 +67,18 @@
     <section v-if="type.accountType === 'pacient'" class="pacient">
         <Loading v-if="isLoading"/>
         <div class="visits" v-if="!isLoading">
-            <h2>Приёмы</h2>
+            <div class="headers">
+                <h2>Приёмы</h2>
+                <a href="#" @click="pages.setPage('visits')">Перейти ко всем приёмам</a>
+            </div>
             <div class="body">
                     <div class="notfound">
                         <h3>Ничего не найдено</h3>
                         <h4>Хотите записаться к терапевту?</h4>
                         <form class="visit--form" @submit="addVisit">
                             <FormSelect @input="changeTimes" :doctors="terapevts" v-model="currentDoctor"/>
-                            <FormInput @change="console.log(date)" v-model="date" :placeholder="'Дата'" :type="'date'" :min="minAllowedTime" :max="maxAllowedTime" required/>
-                            <FormInput :min="startTime" :max="endTime" :type="'time'" required/>
+                            <FormInput @change="console.log(date)" :placeholder="minAllowedTime" v-model="date" :type="'date'" :min="minAllowedTime" :max="maxAllowedTime" required/>
+                            <FormInput :value="startTime" :min="startTime" :max="endTime" :type="'time'" required/>
                             <StyledButton :text="'Записаться'" />
                         </form>
                     </div>
@@ -89,14 +96,22 @@
         <div class="referrals" v-if="!isLoading">
             <h2>Направления</h2>
             <div class="body">
+                <div class="not-found">
+                    <h3>Ничего не найдено</h3>
+                    <h3>Здесь будут отображаться ваши<br /> направления к другим врачам</h3>
+                </div>
+                <!-- <RefferalCard />
                 <RefferalCard />
-                <RefferalCard />
-                <RefferalCard />
+                <RefferalCard /> -->
             </div>
         </div>
 
         <div class="doctors" v-if="!isLoading">
             <h2>Врачи активные на данный момент:</h2>
+            <div class="body">
+                <h3>На данный момент врачей нет</h3>
+                <DoctorCard />
+            </div>
         </div>
     </section>
 
@@ -117,13 +132,19 @@
     gap: 30px;
 }
 
-// .visits{
-//     .body{
-//         display: flex;
-//         flex-direction: column;
-//         gap: 10px;
-//     }    
-// }
+.visits{
+    .body{
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }    
+}
+
+.headers{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
 
 .body{
     border: 3px solid var(--primary-color);

@@ -28,3 +28,13 @@ html, body{
 #app{
   display: flex;
 }
+
+a{
+  color: var(--primary-color);
+  font-weight: bold;
+  transition: .5s;
+}
+
+a:hover{
+  color: #138c66;
+}

@@ -3,20 +3,20 @@
 </script>
 
 <template>
-    <div class="visit-card">
-        <h4>Приём</h4>
-        <p>Врач : Хафизова (Терапевт)</p>
+    <div class="doctor-card">
+        <p>Врач : Хафизова</p>
+        <p>Специальность : Терапевт</p>
+        <p>Время работы:</p>
         <div class="date">
-            <p>Дата: 20.06.2024</p>
-            <p>Время: 12:30</p>
+            <p>Начало - 12:30</p>
+            <p>Конец - 17:00</p>
         </div>
-        <p>Статус: Не завершён</p>
-        <a href="#">Перейти к приёму</a>
+        <a href="tel:+998991233232">+998-99-123-32-32</a>
     </div>
 </template>
 
 <style lang="scss" scoped>
-    .visit-card{
+    .doctor-card{
         background: #fff;
         display: flex;
         flex-direction: column;

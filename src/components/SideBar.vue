@@ -42,6 +42,7 @@ function sideBarHandler(){
 <style lang="scss" scoped>
 
 aside{
+  position: sticky;
   width: 50px;
   height: 100vh;
   background: var(--dark-color);
