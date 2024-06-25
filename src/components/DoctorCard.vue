@@ -1,17 +1,25 @@
 <script setup>
-
+    const props = defineProps({
+        name : String,
+        surname : String,
+        type: String,
+    })
+    const typeObj = JSON.parse(props.type);
+    const specialization = typeObj.specialization;
+    const workTime = typeObj.workTime;
+    const phone = typeObj.phone;
 </script>
 
 <template>
     <div class="doctor-card">
-        <p>Врач : Хафизова</p>
-        <p>Специальность : Терапевт</p>
+        <p>Врач : {{ name }} {{ surname }}</p>
+        <p>Специальность : {{ specialization }}</p>
         <p>Время работы:</p>
         <div class="date">
-            <p>Начало - 12:30</p>
-            <p>Конец - 17:00</p>
+            <p>Начало - {{ workTime.start }}</p>
+            <p>Конец - {{ workTime.end }}</p>
         </div>
-        <a href="tel:+998991233232">+998-99-123-32-32</a>
+        <a href="tel:+998991233232">{{ phone }}</a>
     </div>
 </template>
 
@@ -24,6 +32,7 @@
         padding: 10px 50px;
         border-bottom: 3px solid #000 ;
         border-radius: 10px;
+        width: fit-content;
         h4, p, a{
             color: var(--dark-color);
             font-weight: bold;

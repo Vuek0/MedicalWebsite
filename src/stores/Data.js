@@ -3,7 +3,9 @@ import { defineStore } from "pinia";
 export const useData = defineStore('dataStore', {
     state: () => ({
         doctors: null,
-        activeDoctors: null
+        activeDoctors: null,
+        allDoctors: null,
+        visits: null,
     }),
     actions: {
         changeDoctors(arr){
@@ -11,7 +13,13 @@ export const useData = defineStore('dataStore', {
         },
 
         changeActiveDoctors(arr){
-            this.doctors = arr;
-        }
+            this.activeDoctors = arr;
+        },
+
+        changeAllDoctors(arr){
+            this.allDoctors = arr;
+        },
+
+        
     }
 });

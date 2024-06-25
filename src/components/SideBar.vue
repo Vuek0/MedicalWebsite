@@ -28,7 +28,8 @@ function sideBarHandler(){
 </script>
 
 <template>
-  <div class="wrapper">
+  <div class="sidebar">
+    <div class="wrapper">
     <div class="open" @click="sideBarHandler" :class="{active : isOpen}">  
       <span></span><span></span><span></span>
     </div>
@@ -37,6 +38,7 @@ function sideBarHandler(){
     <div class="space"></div>
     <Page class="page" v-for="page in props.pages.pages" :pages="props.pages" :pageName="page.name" :key="page.name" :icon="page.icon"/>
   </aside>
+  </div>
 </template>
 
 <style lang="scss" scoped>
