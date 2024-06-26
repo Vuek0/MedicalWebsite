@@ -17,11 +17,14 @@ const emit = defineEmits(["update:modelValue"]);
 
 <style lang="scss" scoped>
 input {
-  width: 100%;
+  width: 150px;
   padding: 12px 15px;
-  outline: 2px solid var(--primary-color);
+  //   outline: 2px solid var(--primary-color);
   border: none;
-  border-radius: 10px;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+  font-size: 18px;
+  //   border-radius: 10px;
 
   &::placeholder {
     font-size: 17px;

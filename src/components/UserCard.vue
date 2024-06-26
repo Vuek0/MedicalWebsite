@@ -3,36 +3,25 @@ import StyledButton from "./StyledButton.vue";
 const props = defineProps({
   name: String,
   surname: String,
-  type: String,
   login: String,
   isEditable: Boolean,
-  doctor: Object,
+  user: Object,
 });
-const isEdit = defineModel("isEdit");
-const doctorForEdit = defineModel("doctorForEdit");
-const typeObj = JSON.parse(props.type);
-const specialization = typeObj.specialization;
-const workTime = typeObj.workTime;
-const phone = typeObj.phone;
+const isEditUser = defineModel("isEditUser");
+const userForEdit = defineModel("userForEdit");
 </script>
 
 <template>
   <div class="doctor-card">
-    <p>Врач : {{ name }} {{ surname }}</p>
-    <p>Специальность : {{ specialization }}</p>
-    <p v-if="isEditable">Логин : {{ login }}</p>
-    <p>Время работы:</p>
-    <div class="date">
-      <p>Начало - {{ workTime.start }}</p>
-      <p>Конец - {{ workTime.end }}</p>
-    </div>
-    <a href="tel:+998991233232">{{ phone }}</a>
+    <p>Имя : {{ name }}</p>
+    <p>Фамилия : {{ surname }}</p>
+    <p>Логин : {{ login }}</p>
     <StyledButton
       v-if="isEditable"
       :text="'Редактировать'"
       @click="
-        isEdit = true;
-        doctorForEdit = doctor;
+        isEditUser = true;
+        userForEdit = user;
       "
     />
   </div>

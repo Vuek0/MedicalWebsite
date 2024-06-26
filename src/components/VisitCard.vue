@@ -9,6 +9,8 @@ const props = defineProps({
   visit: Object,
   name: String,
   surname: String,
+  userName: String,
+  userSurname: String,
   date: String,
   time: String,
   status: String,
@@ -36,6 +38,9 @@ function toVisit() {
   <div class="visit-card">
     <h4>Приём</h4>
     <p>Врач : {{ name }} {{ surname }} ({{ specialization }})</p>
+    <p v-if="userName && userSurname">
+      Пациент : {{ userName }} {{ userSurname }}
+    </p>
     <div class="date">
       <p>Дата: {{ date }}</p>
       <p>Время: {{ time }}</p>

@@ -31,6 +31,12 @@ const activeVisits = ref();
 const referrals = ref();
 const formError = ref();
 onMounted(async () => {
+  if (type.accountType === "admin") {
+    pages.setPage("user");
+  }
+  if (type.accountType === "doctor") {
+    pages.setPage("visits");
+  }
   isLoading.value = true;
   if (type.accountType === "pacient") {
     if (!dataStore.doctors) {
@@ -240,6 +246,7 @@ function addVisit(e) {
       } else {
         activeVisits.value.push(data);
       }
+      window.location.reload();
     })
     .catch((error) => {});
 }
@@ -312,7 +319,10 @@ function addVisit(e) {
             направления к другим врачам
           </h3>
         </div>
-        <RefferalCard v-for="referral in referrals" :key="referral" />
+        <div class="referral-cards" v-if="referrals">
+          <RefferalCard v-for="referral in referrals" :key="referral" />
+        </div>
+
         <!-- <RefferalCard />
                 <RefferalCard />
                 <RefferalCard /> -->
@@ -322,23 +332,31 @@ function addVisit(e) {
     <div class="doctors" v-if="!isLoading">
       <h2>Врачи активные на данный момент:</h2>
       <div class="body">
-        <h3 v-if="!activeDoctors">На данный момент врачей нет</h3>
-        <DoctorCard
-          v-for="item in activeDoctors"
-          :key="item"
-          :name="item.name"
-          :surname="item.surname"
-          :type="item.type"
-        />
+        <h3 v-if="activeDoctors && activeDoctors.length == 0">
+          На данный момент врачей нет
+        </h3>
+        <div class="doctor-cards" v-if="activeDoctors">
+          <DoctorCard
+            v-for="item in activeDoctors"
+            :key="item"
+            :name="item.name"
+            :surname="item.surname"
+            :type="item.type"
+          />
+        </div>
       </div>
     </div>
   </section>
 
-  <section v-else-if="type.accountType === 'doctor'" class="doctor">
-    doctor
-  </section>
-
-  <section v-else-if="type.accountType === 'admin'" class="admin">
+  <section
+    v-else-if="type.accountType === 'admin'"
+    class="admin"
+    v-on:load="console.log('yes')"
+    @load="
+      pages.setPage('visits');
+      console.log('set page lol');
+    "
+  >
     admin
   </section>
 </template>
