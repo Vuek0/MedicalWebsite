@@ -41,7 +41,12 @@
 </template>
 
 <style lang="scss" scoped>
+
+    .doctor-card{
+        width: auto;
+    }
     .col{
+        padding: 50px 400px;
         display: flex;
         align-items: center;
         justify-content: center;

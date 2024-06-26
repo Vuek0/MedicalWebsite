@@ -6,6 +6,9 @@ export const useData = defineStore('dataStore', {
         activeDoctors: null,
         allDoctors: null,
         visits: null,
+        activeVisits: null,
+        referrals: null,
+        myVisits: null,
     }),
     actions: {
         changeDoctors(arr){

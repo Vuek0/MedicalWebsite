@@ -25,6 +25,7 @@
 
 <style lang="scss" scoped>
     .doctor-card{
+        width: 100%;
         background: #fff;
         display: flex;
         flex-direction: column;
@@ -32,7 +33,6 @@
         padding: 10px 50px;
         border-bottom: 3px solid #000 ;
         border-radius: 10px;
-        width: fit-content;
         h4, p, a{
             color: var(--dark-color);
             font-weight: bold;

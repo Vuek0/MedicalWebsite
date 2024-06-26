@@ -18,11 +18,13 @@
     .info{
         display: flex;
         flex-direction: column;
-
+        align-items: center;
+        border: 2px solid var(--primary-color);
+        padding: 100px 30px;
         gap: 15px;
 
         h2{
-            font-size: 60px;
+            font-size: 30px;
             text-decoration: underline;
         }
         p{
@@ -34,7 +36,7 @@
     @media(max-width: 600px){
         .info{
             h2{
-            font-size: 35px;
+            font-size: 20px;
             }
         }
         

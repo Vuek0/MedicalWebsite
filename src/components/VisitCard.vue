@@ -1,46 +1,80 @@
 <script setup>
+import { ref } from "vue";
+import { usePages } from "../stores/Pages";
+const pages = usePages();
+const isModalOpen = defineModel("isModalOpen");
+const currentVisit = defineModel("currentVisit");
 
+const props = defineProps({
+  visit: Object,
+  name: String,
+  surname: String,
+  date: String,
+  time: String,
+  status: String,
+  type: String,
+  isMainPage: Boolean,
+});
+
+const specialization = JSON.parse(props.type).specialization;
+function toVisit() {
+  if (props.isMainPage) {
+    const url = new URL(window.location.href);
+    url.searchParams.set("visit", props.visit._id);
+    window.history.pushState(null, "", url.toString());
+    pages.currentPage = "visits";
+    currentVisit.value = props.visit;
+    isModalOpen.value = true;
+  } else {
+    currentVisit.value = props.visit;
+    isModalOpen.value = true;
+  }
+}
 </script>
 
 <template>
-    <div class="visit-card">
-        <h4>Приём</h4>
-        <p>Врач : Хафизова (Терапевт)</p>
-        <div class="date">
-            <p>Дата: 20.06.2024</p>
-            <p>Время: 12:30</p>
-        </div>
-        <p>Статус: Не завершён</p>
-        <a href="#">Перейти к приёму</a>
+  <div class="visit-card">
+    <h4>Приём</h4>
+    <p>Врач : {{ name }} {{ surname }} ({{ specialization }})</p>
+    <div class="date">
+      <p>Дата: {{ date }}</p>
+      <p>Время: {{ time }}</p>
     </div>
+    <p>Статус: {{ status }}</p>
+    <a href="#" @click="toVisit">Перейти к приёму</a>
+  </div>
 </template>
 
 <style lang="scss" scoped>
-    .visit-card{
-        background: #fff;
-        display: flex;
-        flex-direction: column;
-        gap: 3px;
-        padding: 10px 50px;
-        border-bottom: 3px solid #000 ;
-        border-radius: 10px;
-        h4, p, a{
-            color: var(--dark-color);
-            font-weight: bold;
-        }
+.visit-card {
+  width: 100%;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 10px 40px;
+  border-bottom: 3px solid #000;
+  border-radius: 10px;
+  h4,
+  p,
+  a {
+    color: var(--dark-color);
+    font-weight: bold;
+  }
 
-        a{
-            font-style: italic;
-            transition: 0.5s;
-            // margin-top: 10px;
-            &:hover{
-                color: var(--primary-color);
-            }
-        }
-
-        .date{
-            display: flex;
-            gap: 20px;
-        }
+  a {
+    font-style: italic;
+    transition: 0.5s;
+    // margin-top: 10px;
+    &:hover {
+      color: var(--primary-color);
     }
+  }
+
+  .date {
+    display: flex;
+    gap: 20px;
+  }
+}
 </style>

@@ -5,7 +5,6 @@ import ProfileText from "./ProfileText.vue";
 import StyledButton from "./StyledButton.vue";
 import { useUser } from '../stores/User';
 import { usePages } from '../stores/Pages';
-import Modal from "./Modal.vue";
 import axios from 'axios';
 const user = useUser();
 const pages = usePages();
@@ -19,23 +18,23 @@ function exitHandler(e){
     location.reload();
 }
 
-async function deleteHandler(){
-    const req = await axios.delete(
-        `https://medical-server-six.vercel.app/users?key=${API_KEY}`, 
-        {
-            _id : userObj._id
-        }
-    );
-    const res = await req;
-    if(res.status === 200){
-        console.log(res.data.data);
-        setCookie("_id", "");
+// async function deleteHandler(){
+//     const req = await axios.delete(
+//         `https://medical-server-six.vercel.app/users?key=${API_KEY}`, 
+//         {
+//             _id : userObj._id
+//         }
+//     );
+//     const res = await req;
+//     if(res.status === 200){
+//         console.log(res.data.data);
+//         setCookie("_id", "");
 
-        location.reload();
-    }
+//         location.reload();
+//     }
 
-    // const users = response.data;
-};
+//     // const users = response.data;
+// };
 
 
 
@@ -45,8 +44,6 @@ async function deleteHandler(){
     <section v-if="type.accountType==='pacient'" class="pacient">
         <ProfileText />        
         <StyledButton @click="exitHandler" :text="'Выйти из аккаунта'" />
-        <StyledButton @click="isModalOpen = true" :text="'Удалить аккаунт'"/>
-        <Modal v-if="isModalOpen" :handler="deleteHandler" v-model="isModalOpen" :text="'Вы уверены в том что хотите удалить свой аккаунт?'" />
     </section>
 
     <section v-else-if="type.accountType==='doctor'">

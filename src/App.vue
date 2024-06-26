@@ -192,6 +192,10 @@ async function registrationHandler(e){
     width: 100%;
   }
 
+  section{
+    margin-top: 30px;
+  }
+
   .registration, .login{
 
     display: flex;
