@@ -96,21 +96,26 @@ async function registrationHandler(e) {
       password: password.value,
       type: '{"accountType" : "pacient"}',
     };
-    const req = await axios.post(
-      `https://medical-server-six.vercel.app/users?key=${API_KEY}`,
-      data,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
+    try {
+      const req = await axios.post(
+        `https://medical-server-six.vercel.app/users?key=${API_KEY}`,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const res = await req;
+      const object = await res.data;
+      console.log(object);
+      if (res.status == 200) {
+        if (!getCookie("_id")) setCookie("_id", object.data._id, 3);
+        user.obj = object;
+        isRegistered.value = true;
       }
-    );
-    const res = await req;
-    const object = await res.data;
-    if (res.status == 200) {
-      if (!getCookie("_id")) setCookie("_id", object._id, 3);
-      user.obj = object;
-      isRegistered.value = true;
+    } catch (err) {
+      console.log(err);
     }
   } else {
     formError.value = "Поля не могут быть пустыми";
