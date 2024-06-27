@@ -25,7 +25,8 @@ const treatment = defineModel("treatment");
 const referral = defineModel("referral");
 const status = defineModel("status");
 const emit = defineEmits(["update:modelValue"]);
-
+diagnose.value = props.visit.diagnose;
+treatment.value = props.visit.treatment;
 function handler(e) {
   formError.value = "";
   if (diagnose.value && treatment.value) {
