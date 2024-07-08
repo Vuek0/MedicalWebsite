@@ -24,6 +24,14 @@ const password = defineModel("password");
 const formError = ref();
 const API_KEY = import.meta.env.VITE_API_KEY;
 
+function removeParam(param, urlParams) {
+  if (urlParams.has(param)) {
+    const url = new URL(window.location.href);
+    url.searchParams.delete(param);
+    window.history.pushState(null, "", url.toString());
+  }
+}
+
 onMounted(async () => {
   isLoading.value = true;
   const urlParams = new URLSearchParams(window.location.search);
@@ -31,6 +39,12 @@ onMounted(async () => {
   surname.value = urlParams.get("surname");
   login.value = urlParams.get("login");
   password.value = urlParams.get("password");
+  removeParam("name", urlParams);
+  removeParam("surname", urlParams);
+  removeParam("login", urlParams);
+  removeParam("password", urlParams);
+
+  // console.log(urlParams);
   if (name.value && surname.value && login.value && password.value) {
     isLoginForm.value = false;
     registrationHandler();
@@ -39,14 +53,19 @@ onMounted(async () => {
   }
   if (getCookie("_id")) {
     const id = getCookie("_id");
-    const response = await axios.get(
-      `https://medical-server-six.vercel.app/users?key=${API_KEY}&_id=${id}`
-    );
-    const userObj = response.data;
-    user.obj = userObj;
-    isRegistered.value = true;
-    isLoginForm.value = false;
-    isLoading.value = false;
+    axios
+      .get(
+        `https://medical-server-six.vercel.app/users?key=${API_KEY}&_id=${id}`
+      )
+      .then((res) => {
+        user.obj = res.data;
+        isRegistered.value = true;
+        isLoginForm.value = false;
+        isLoading.value = false;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   } else {
     isLoading.value = false;
   }
@@ -97,23 +116,29 @@ async function registrationHandler(e) {
       type: '{"accountType" : "pacient"}',
     };
     try {
-      const req = await axios.post(
-        `https://medical-server-six.vercel.app/users?key=${API_KEY}`,
-        data,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      const res = await req;
-      const object = await res.data;
-      console.log(object);
-      if (res.status == 200) {
-        if (!getCookie("_id")) setCookie("_id", object.data._id, 3);
-        user.obj = object;
-        isRegistered.value = true;
-      }
+      axios
+        .post(
+          `https://medical-server-six.vercel.app/users?key=${API_KEY}`,
+          data,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        )
+        .then((res) => {
+          const object = res.data;
+          console.log(object);
+          if (res.status == 200) {
+            if (!getCookie("_id")) setCookie("_id", object.data._id, 3);
+            user.obj = object;
+            isRegistered.value = true;
+            location.reload();
+          }
+        })
+        .catch((err) => {
+          formError.value = err.response.data.message;
+        });
     } catch (err) {
       console.log(err);
     }
