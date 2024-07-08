@@ -44,7 +44,6 @@ onMounted(async () => {
   removeParam("login", urlParams);
   removeParam("password", urlParams);
 
-  // console.log(urlParams);
   if (name.value && surname.value && login.value && password.value) {
     isLoginForm.value = false;
     registrationHandler();
@@ -63,9 +62,7 @@ onMounted(async () => {
         isLoginForm.value = false;
         isLoading.value = false;
       })
-      .catch((err) => {
-        console.log(err);
-      });
+      .catch((err) => {});
   } else {
     isLoading.value = false;
   }
@@ -86,10 +83,8 @@ async function loginHandler(e) {
         const userData = res.data;
         if (userData.status && userData.status !== 200) {
           formError.value = userData.message;
-          console.log(user);
         } else {
           user.obj = userData;
-          console.log(userData._id);
           isLoginForm.value = false;
           isRegistered.value = true;
           if (!getCookie("_id")) setCookie("_id", userData._id, 3);
@@ -98,7 +93,7 @@ async function loginHandler(e) {
       });
   } else {
     formError.value = "Поля не могут быть пустыми";
-    console.log(formError);
+    isLoading.value = false;
   }
 }
 
@@ -128,7 +123,6 @@ async function registrationHandler(e) {
         )
         .then((res) => {
           const object = res.data;
-          console.log(object);
           if (res.status == 200) {
             if (!getCookie("_id")) setCookie("_id", object.data._id, 3);
             user.obj = object;
@@ -139,12 +133,9 @@ async function registrationHandler(e) {
         .catch((err) => {
           formError.value = err.response.data.message;
         });
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   } else {
     formError.value = "Поля не могут быть пустыми";
-    console.log(formError);
   }
   isLoading.value = false;
 }

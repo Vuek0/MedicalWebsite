@@ -166,11 +166,19 @@ let month = currentDate.getMonth() + 1;
 if (month < 10) {
   month = `0${month}`;
 }
-const minAllowedDate = `${currentDate.getFullYear()}-${month}-${currentDate.getDate()}`;
+let minAllowedDate = `${currentDate.getFullYear()}-${month}-${currentDate.getDate()}`;
 // console.log(month)
 let maxAllowedDate = `${currentDate.getFullYear()}-${month}-${
   currentDate.getDate() + 7
 }`;
+
+if (currentDate.getDate() < 11) {
+  minAllowedDate = `${currentDate.getFullYear()}-${month}-0${currentDate.getDate()}`;
+}
+
+console.log("minAllowedDate: ", minAllowedDate);
+console.log("maxAllowedDate: ", maxAllowedDate);
+
 if (currentDate.getDate() > 24) {
   if (month === 12) {
     maxAllowedDate = `${currentDate.getFullYear() + 1}-01-0${
@@ -232,23 +240,25 @@ function addVisit(e) {
   } else {
     doctor = currentDoctor.value;
   }
+  if (!formError.value) {
+    axios
+      .post(`https://medical-server-six.vercel.app/visits?key=${API_KEY}`, {
+        doctor: doctor,
+        pacient: userObj,
+        date: date.value,
+        time: time.value,
+      })
+      .then((data) => {
+        if (!activeVisits.value) {
+          activeVisits.value = [data];
+        } else {
+          activeVisits.value.push(data);
+        }
+        window.location.reload();
+      })
+      .catch((error) => {});
+  }
   // console.log((typeof doctor) == "string");
-  axios
-    .post(`https://medical-server-six.vercel.app/visits?key=${API_KEY}`, {
-      doctor: doctor,
-      pacient: userObj,
-      date: date.value,
-      time: time.value,
-    })
-    .then((data) => {
-      if (!activeVisits.value) {
-        activeVisits.value = [data];
-      } else {
-        activeVisits.value.push(data);
-      }
-      window.location.reload();
-    })
-    .catch((error) => {});
 }
 </script>
 
@@ -351,11 +361,7 @@ function addVisit(e) {
   <section
     v-else-if="type.accountType === 'admin'"
     class="admin"
-    v-on:load="console.log('yes')"
-    @load="
-      pages.setPage('visits');
-      console.log('set page lol');
-    "
+    @load="pages.setPage('visits')"
   >
     admin
   </section>

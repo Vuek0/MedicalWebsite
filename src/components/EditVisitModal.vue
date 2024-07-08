@@ -25,8 +25,14 @@ const treatment = defineModel("treatment");
 const referral = defineModel("referral");
 const status = defineModel("status");
 const emit = defineEmits(["update:modelValue"]);
-diagnose.value = props.visit.diagnose;
-treatment.value = props.visit.treatment;
+if (props.visit.diagnose.length === 1 || !props.visit.diagnose) {
+} else {
+  diagnose.value = props.visit.diagnose;
+}
+if (props.visit.treatment.length === 1 || !props.visit.treatment) {
+} else {
+  treatment.value = props.visit.treatment;
+}
 function handler(e) {
   formError.value = "";
   if (diagnose.value && treatment.value) {
@@ -95,7 +101,7 @@ function handler(e) {
         <FormInput
           :value="diagnose"
           :type="'text'"
-          :placeholder="'Диагноз'"
+          placeholder="Диагноз"
           v-model="diagnose"
         />
         <textarea

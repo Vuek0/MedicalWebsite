@@ -27,7 +27,7 @@ const emit = defineEmits(["update:modelValue"]);
         <p>Дата : {{ visit.date }}</p>
         <p>Время : {{ visit.time }}</p>
         <p>Диагноз : {{ visit.diagnose || "Пусто" }}</p>
-        <p>Лечение : {{ visit.treatment || "Пусто" }}</p>
+        <p>Лечение : <br />{{ visit.treatment || "Пусто" }}</p>
         <p>Статус : {{ visit.status }}</p>
         <div class="referrals">
           <h3>Направления :</h3>
@@ -58,7 +58,8 @@ const emit = defineEmits(["update:modelValue"]);
     max-width: 500px;
     height: fit-content;
     z-index: 1;
-    background: var(--dark-color);
+    background: #fefefe;
+    color: #000;
     padding: 50px;
     position: relative;
     .body {
@@ -82,7 +83,7 @@ const emit = defineEmits(["update:modelValue"]);
         top: 25px;
         right: 10px;
         display: block;
-        background: var(--primary-color);
+        background: #000000;
         width: 30px;
         height: 3px;
       }

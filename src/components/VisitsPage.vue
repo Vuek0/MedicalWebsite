@@ -29,8 +29,8 @@ onMounted(async () => {
         )
         .then((data) => {
           if (data.data.status != 204) {
-            visits.value = data.data;
-            dataStore.myVisits = data.data;
+            visits.value = data.data.reverse();
+            dataStore.myVisits = data.data.reverse();
             let urlParams = new URLSearchParams(window.location.search);
             if (urlParams.has("visit")) {
               const url = new URL(window.location.href);
@@ -80,8 +80,8 @@ onMounted(async () => {
         )
         .then((data) => {
           if (data.data.status != 204) {
-            doctorVisits.value = data.data;
-            dataStore.doctorVisits = data.data;
+            doctorVisits.value = data.data.reverse();
+            dataStore.doctorVisits = data.data.reverse();
           } else {
             dataStore.doctorVisits = [];
           }
@@ -125,19 +125,23 @@ function putBack() {
 <template>
   <div class="visits" v-if="JSON.parse(userObj.type).accountType === 'pacient'">
     <h2>Все визиты</h2>
-    <VisitCard
-      v-for="visit in visits"
-      :visit="visit"
-      :key="visit"
-      v-model:isModalOpen="isModalOpen"
-      v-model:currentVisit="currentVisit"
-      :name="visit.doctor.name"
-      :surname="visit.doctor.surname"
-      :date="visit.date"
-      :time="visit.time"
-      :status="visit.status"
-      :type="visit.doctor.type"
-    />
+    <p v-if="!visits || (visits && visits.length == 0)">Ничего не найдено</p>
+    <div class="cards">
+      <VisitCard
+        v-for="visit in visits"
+        :visit="visit"
+        :key="visit"
+        v-model:isModalOpen="isModalOpen"
+        v-model:currentVisit="currentVisit"
+        :name="visit.doctor.name"
+        :surname="visit.doctor.surname"
+        :date="visit.date"
+        :time="visit.time"
+        :status="visit.status"
+        :type="visit.doctor.type"
+      />
+    </div>
+
     <Modal
       v-if="isModalOpen"
       v-model="isModalOpen"
@@ -153,21 +157,24 @@ function putBack() {
       <SearchButton />
     </form>
     <p v-if="doctorVisits && doctorVisits.length == 0">Ничего не найдено</p>
-    <VisitCard
-      v-for="visit in doctorVisits"
-      :visit="visit"
-      :key="visit"
-      v-model:isModalOpen="isEditVisit"
-      v-model:currentVisit="currentVisit"
-      :name="visit.doctor.name"
-      :surname="visit.doctor.surname"
-      :userName="visit.pacient.name"
-      :userSurname="visit.pacient.surname"
-      :date="visit.date"
-      :time="visit.time"
-      :status="visit.status"
-      :type="visit.doctor.type"
-    />
+    <div class="cards">
+      <VisitCard
+        v-for="visit in doctorVisits"
+        :visit="visit"
+        :key="visit"
+        v-model:isModalOpen="isEditVisit"
+        v-model:currentVisit="currentVisit"
+        :name="visit.doctor.name"
+        :surname="visit.doctor.surname"
+        :userName="visit.pacient.name"
+        :userSurname="visit.pacient.surname"
+        :date="visit.date"
+        :time="visit.time"
+        :status="visit.status"
+        :type="visit.doctor.type"
+      />
+    </div>
+
     <EditVisitModal
       v-if="isEditVisit"
       v-model="isEditVisit"
@@ -177,6 +184,13 @@ function putBack() {
 </template>
 
 <style lang="scss" scoped>
+.cards {
+  display: flex;
+  justify-content: center;
+  gap: 100px;
+  padding: 50px 200px;
+  flex-wrap: wrap;
+}
 .visits {
   width: 100%;
   display: flex;

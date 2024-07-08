@@ -52,7 +52,7 @@ function toVisit() {
 
 <style lang="scss" scoped>
 .visit-card {
-  width: 100%;
+  width: fit-content;
   background: #fff;
   display: flex;
   flex-direction: column;
