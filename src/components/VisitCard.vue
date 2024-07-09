@@ -82,4 +82,10 @@ function toVisit() {
     gap: 20px;
   }
 }
+
+@media (max-width: 769px) {
+  .visit-card {
+    width: 80vw;
+  }
+}
 </style>
