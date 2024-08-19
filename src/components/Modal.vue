@@ -26,8 +26,8 @@ const emit = defineEmits(["update:modelValue"]);
         <p>Доктор : {{ visit.doctor.name }} {{ visit.doctor.surname }}</p>
         <p>Дата : {{ visit.date }}</p>
         <p>Время : {{ visit.time }}</p>
-        <p>Диагноз : {{ visit.diagnose || "Пусто" }}</p>
-        <p>Лечение : <br />{{ visit.treatment || "Пусто" }}</p>
+        <p>Диагноз : {{ visit.diagnose && visit.diagnose != " " ? visit.diagnose : "Пусто" }}</p>
+        <p>Лечение : <br /><pre>{{ visit.treatment && visit.treatment != " " ? visit.treatment : "Пусто" }}</pre></p>
         <p>Статус : {{ visit.status }}</p>
         <div class="referrals">
           <h3>Направления :</h3>
